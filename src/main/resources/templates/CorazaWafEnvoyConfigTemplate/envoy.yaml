@@ -1,0 +1,19 @@
+node:
+    id: "corazawaf.id"
+    cluster: "corazawaf.cluster"
+dynamicResources:
+    ldsConfig:
+        pathConfigSource:
+            path: "{envoyTemplateData.xdsPath}{envoyTemplateData.ldsFilename}"
+            watchedDirectory:
+                path: "{envoyTemplateData.xdsPath}"
+    cdsConfig:
+        pathConfigSource:
+            path: "{envoyTemplateData.xdsPath}{envoyTemplateData.cdsFilename}"
+            watchedDirectory:
+                path: "{envoyTemplateData.xdsPath}"
+admin:
+    address:
+        socketAddress:
+            address: "0.0.0.0"
+            portValue: {envoyTemplateData.adminPort}

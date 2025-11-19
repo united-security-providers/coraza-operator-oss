@@ -1,0 +1,124 @@
+
+resources:
+- '@type': "type.googleapis.com/envoy.config.listener.v3.Listener"
+  name: "corazawaf.listener"
+  address:
+    socketAddress:
+      address: "0.0.0.0"
+      portValue: {trafficPort}
+  filterChains:
+  - filters:
+    - name: "corazawaf.listener.filters.http"
+      typedConfig:
+        '@type': "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
+        statPrefix: "corazawaf"
+        routeConfig:
+          virtualHosts:
+          - name: "corazawaf.listener.filters.http.routeConfig.virtualHosts"
+            domains:
+            - "*"
+            routes:
+            - match:
+                prefix: "/"
+              route:
+                cluster: "corazawaf.cluster.backend"
+                autoHostRewrite: true
+                appendXForwardedHost: true
+        httpFilters:
+        - name: "corazawaf.listener.filters.http.httpFilter.golang.coraza"
+          typedConfig:
+            '@type': "type.googleapis.com/envoy.extensions.filters.http.golang.v3alpha.Config"
+            libraryId: "coraza-waf"
+            libraryPath: "{goFilterPath}"
+            pluginName: "coraza-waf"
+{#let spec=corazaWaf.spec requestRuleIdCounter=200000 responseRuleIdCounter=250000}
+            pluginConfig:
+              '@type': "type.googleapis.com/xds.type.v3.TypedStruct"
+              value:
+                log_format: "json"
+                directives: |
+                  {
+                    "default" : {
+                      "simple_directives" : [
+                        "SecRuleEngine On",
+                        "Include @crs-setup-conf",
+                        "# CRS: Security and paranoia level directives",
+                        "SecAction \"id:102000,phase:1,nolog,pass,t:none,setvar:tx.inbound_anomaly_score_threshold={spec.getCrs().getRequestAnomalyScore()},setvar:tx.outbound_anomaly_score_threshold={spec.getCrs().getResponseAnomalyScore()},setvar:tx.inbound_blocked=false,setvar:tx.outbound_blocked=false,setvar:tx.crs_setup_version={spec.getCrs().getCrsVersion()}\"",
+                        "SecAction \"id:102001,phase:1,pass,nolog,t:none,setvar:tx.detection_paranoia_level={spec.getCrs().getParanoiaLevel().getDetecting()}\"",
+                        "SecAction \"id:102002,phase:1,pass,nolog,t:none,setvar:tx.blocking_paranoia_level={spec.getCrs().getParanoiaLevel().getEnforcing()}\"",
+                        "# Request body access and limit directives",
+{#if spec.isRequestBodyAccess()}
+                        "SecRequestBodyAccess on",
+                        "SecRequestBodyLimit {spec.getRequestBodyLimitBytes()}",
+                        "SecRequestBodyLimitAction {spec.getRequestBodyLimitAction()}",
+{#else}
+                        "SecRequestBodyAccess off",
+{/if}
+                        "# JSON parse/validate directives",
+{#if spec.isParseJson()}
+                        "SecRule REQUEST_HEADERS:Content-Type \"application/json\" \"id:104001,phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=JSON\"",
+{#if spec.isValidateJson()}
+                        "SecRule REQBODY_ERROR \"!@eq 0\" \"id:104002, phase:2,t:none,log,deny,status:400,msg:'Failed to parse request body.',logdata:'%\{reqbody_error_msg\}',severity:CRITICAL\"",
+{/if}
+{/if}
+                        "# Response body access and limit directives",
+{#if spec.isResponseBodyAccess()}
+                        "SecResponseBodyAccess on",
+                        "SecResponseBodyLimit {spec.getResponseBodyLimitBytes()}",
+                        "SecResponseBodyLimitAction {spec.getResponseBodyLimitAction()}",
+{#else}
+                        "SecResponseBodyAccess off",
+{/if}
+                        "# CRS: Request Rule exceptions",
+{#each spec.crs.requestRuleExceptions}
+                        "SecRule REQUEST_FILENAME \"@beginsWith {it.path}\" \"phase:1,nolog,pass,id:{requestRuleIdCounter + it_index},{it.exceptionRuleAction}\"",
+{/each}
+                        "# CRS: Response Rule exceptions",
+{#each spec.crs.responseRuleExceptions}
+                        "SecRule REQUEST_FILENAME \"@beginsWith {it.path}\" \"phase:3,nolog,pass,id:{responseRuleIdCounter + it_index},{it.exceptionRuleAction}\"",
+{/each}
+                        "# CRS: Rule sets includes",
+                        "Include @owasp_crs/REQUEST-901-INITIALIZATION.conf",
+{#each spec.getCrs().getEnabledRequestRules()}
+                        "Include @owasp_crs/{it.getRuleSetName()}.conf",
+{/each}
+                        "Include @owasp_crs/REQUEST-949-BLOCKING-EVALUATION.conf",
+{#each spec.getCrs().getEnabledResponseRules()}
+                        "Include @owasp_crs/{it.getRuleSetName()}.conf",
+{/each}
+                        "Include @owasp_crs/RESPONSE-959-BLOCKING-EVALUATION.conf",
+                        "Include @owasp_crs/RESPONSE-980-CORRELATION.conf",
+{#if spec.crs.mode.toString() eq 'DETECT' or spec.crs.enabledRequestRules.isEmpty}
+                        "SecRuleRemoveByID 949110",
+                        "SecRuleRemoveByID 949111",
+{/if}
+{#if spec.crs.mode.toString() eq 'DETECT' or spec.crs.enabledResponseRules.isEmpty}
+                        "SecRuleRemoveByID 959100",
+                        "SecRuleRemoveByID 959101",
+{/if}
+                        ""
+                      ]
+                    }
+                  }
+{/let}
+                default_directive: "default"
+                host_directive_map: "\{\}"
+        - name: "corazawaf.listener.filters.http.httpFilter.router"
+          typedConfig:
+            '@type': "type.googleapis.com/envoy.extensions.filters.http.router.v3.Router"
+        http2ProtocolOptions: \{\}
+        accessLog:
+        - name: "envoy.access_loggers.stdout"
+          typedConfig:
+            '@type': "type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog"
+            logFormat:
+              textFormatSource:
+                inlineString: "[%START_TIME%] [%DOWNSTREAM_DIRECT_REMOTE_ADDRESS%] \
+                  [%REQ(:METHOD)%] [%REQ(X-ENVOY-ORIGINAL-PATH?:PATH):256%] [%PROTOCOL%] \
+                  [%RESPONSE_CODE%] [%RESPONSE_FLAGS%] [%RESPONSE_CODE_DETAILS%] [%BYTES_RECEIVED%] [%BYTES_SENT%] \
+                  [%DURATION%] [%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%] [%REQ(X-FORWARDED-FOR)%] [%REQ(USER-AGENT)%] \
+                  [%REQ(X-REQUEST-ID)%] [%REQ(X-CLIENT-TRACE-ID)%] [%REQ(:AUTHORITY)%] [%UPSTREAM_HOST%]\n"
+        generateRequestId: true
+        upgradeConfigs:
+        - upgradeType: "websocket"
+  perConnectionBufferLimitBytes: 1048576

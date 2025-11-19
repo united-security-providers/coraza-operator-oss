@@ -1,0 +1,20 @@
+resources:
+  - '@type': "type.googleapis.com/envoy.config.cluster.v3.Cluster"
+    name: "corazawaf.cluster.backend"
+    type: "LOGICAL_DNS"
+    connectTimeout: "5s"
+    dnsLookupFamily: "V4_ONLY"
+    loadAssignment:
+      clusterName: "corazawaf.cluster.backend"
+      endpoints:
+        - lbEndpoints:
+            - endpoint:
+                address:
+                  socketAddress:
+                    address: "{backend.getHostname()}"
+                    portValue: {backend.getPort()}
+    typedExtensionProtocolOptions:
+      envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+        '@type': "type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions"
+        explicitHttpConfig:
+          httpProtocolOptions: \{\}

@@ -1,0 +1,18 @@
+---
+apiVersion: oss.u-s-p.ch/v1alpha1
+kind: CorazaWaf
+metadata:
+  name: testwaf
+  namespace: demo
+spec:
+  backend:
+    hostname: "juice-shop"
+    port: 8000
+  crs:
+    paranoiaLevel:
+      detecting: 2
+      enforcing: 1
+    requestRuleExceptions:
+      - path: /socket.io/
+        ruleIds:
+          - 949110

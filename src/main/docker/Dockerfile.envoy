@@ -1,0 +1,38 @@
+# component versions
+ARG ENVOY_VERSION="v1.35.6"
+ARG CORAZA_GO_FILTER_VERSION="v1.1.1"
+ARG BUILD_VERSION
+ARG ASSET_IMAGE="alpine"
+ARG ASSET_IMAGE_VERSION="3.22"
+ARG ENVOY_CONTRIB_IMAGE="envoyproxy/envoy"
+ARG ENVOY_CONTRIB_IMAGE_VERSION="contrib-$ENVOY_VERSION"
+
+# STAGE: assets
+# gathers assets from different sources for later copying into the image
+FROM ${ASSET_IMAGE}:${ASSET_IMAGE_VERSION} AS assets
+ARG ASSET_IMAGE
+ARG ASSET_IMAGE_VERSION
+ARG CORAZA_GO_FILTER_VERSION
+
+WORKDIR /work
+
+# Get coraza-waf-lib
+ADD "https://github.com/united-security-providers/coraza-envoy-go-filter/releases/download/${CORAZA_GO_FILTER_VERSION}/coraza-waf.so" /work/coraza-waf.so
+
+FROM $ENVOY_CONTRIB_IMAGE:$ENVOY_CONTRIB_IMAGE_VERSION AS envoy-coraza
+
+ARG ENVOY_VERSION
+ARG CORAZA_GO_FILTER_VERSION=
+ARG BUILD_VERSION=
+ARG ENVOY_CONTRIB_IMAGE
+ARG ENVOY_CONTRIB_IMAGE_VERSION
+ARG GO_LIB_PATH=/opt/envoy/go-filter
+
+# Copy coraza-waf-lib to final image
+COPY --chown=0:0 --chmod=755 --from=assets /work/coraza-waf.so $GO_LIB_PATH/
+
+LABEL org.opencontainers.image.title="Coraza WAF Envoy"
+LABEL org.opencontainers.image.version="${BUILD_VERSION}"
+LABEL org.opencontainers.image.source="https://github.com/united-security-providers/coraza-operator-oss"
+LABEL ch.usp.oss.corazawaf.version.envoy-proxy="${ENVOY_CONTRIB_IMAGE_VERSION}"
+LABEL ch.usp.oss.corazawaf.version.coraza-go-filter="${CORAZA_GO_FILTER_VERSION}"
