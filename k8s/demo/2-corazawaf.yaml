@@ -3,7 +3,7 @@ apiVersion: oss.u-s-p.ch/v1alpha1
 kind: CorazaWaf
 metadata:
   name: testwaf
-  namespace: demo
+  namespace: default
 spec:
   backend:
     hostname: "juice-shop"
@@ -15,4 +15,4 @@ spec:
     requestRuleExceptions:
       - path: /socket.io/
         ruleIds:
-          - 949110
+          - 920420
