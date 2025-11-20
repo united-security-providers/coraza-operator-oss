@@ -27,9 +27,10 @@ public class CorazaWafCrsResponseRuleException {
 	private List<Integer> ruleIds = new LinkedList<>();
 
     @JsonIgnore
+    @SuppressWarnings("unused")
     public String getExceptionRuleAction() {
         return ruleIds.stream()
-                .map(ruleId -> "ctl:ruleRemoveTargetById=" + ruleId)
+                .map(ruleId -> "ctl:ruleRemoveById=" + ruleId)
                 .collect(Collectors.joining(","));
     }
 

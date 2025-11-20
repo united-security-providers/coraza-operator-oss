@@ -28,23 +28,6 @@ public class CorazaWafCrsRequestRuleException {
 	@Builder.Default
 	private List<Integer> ruleIds = new LinkedList<>();
 
-    @JsonIgnore
-    public String getExceptionRuleAction() {
-        return ruleIds.stream()
-                .map(ruleId -> {
-                    StringBuilder part = new StringBuilder();
-                    part.append("ctl:ruleRemoveTargetById=").append(ruleId);
-                    if (requestPartType != null) {
-                        part.append(";").append(requestPartType);
-                        if (requestPartName != null) {
-                            part.append(":").append(requestPartName);
-                        }
-                    }
-                    return part.toString();
-                })
-                .collect(Collectors.joining(","));
-    }
-
 	@JsonPropertyDescription("Request part type (only has an effect if request rule exception)")
 	private String requestPartType;
 
@@ -55,4 +38,23 @@ public class CorazaWafCrsRequestRuleException {
 	@JsonPropertyDescription("Path to which this exception is applied.")
 	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	private String path;
+
+    @JsonIgnore
+    @SuppressWarnings("unused")
+    public String getExceptionRuleAction() {
+        return ruleIds.stream()
+                .map(ruleId -> {
+                    if (requestPartType == null) {
+                        return "ctl:ruleRemoveById=" + ruleId;
+                    } else {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("ctl:ruleRemoveTargetById=").append(ruleId).append(";").append(requestPartType);
+                        if (requestPartName != null) {
+                            sb.append(":").append(requestPartName);
+                        }
+                        return sb.toString();
+                    }
+                })
+                .collect(Collectors.joining(","));
+    }
 }
