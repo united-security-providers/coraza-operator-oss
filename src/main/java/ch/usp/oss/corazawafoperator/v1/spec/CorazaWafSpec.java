@@ -56,6 +56,7 @@ public class CorazaWafSpec {
     private long requestBodyLimitKb = 128L;
 
     @JsonIgnore
+    @SuppressWarnings("unused")
     public long getRequestBodyLimitBytes() {
         return Math.min(requestBodyLimitKb * 1024L, REQ_BODY_LIMIT_MAX);
     }
@@ -87,6 +88,7 @@ public class CorazaWafSpec {
     private long responseBodyLimitKb = 256L;
 
     @JsonIgnore
+    @SuppressWarnings("unused")
     public long getResponseBodyLimitBytes() {
         return Math.min(responseBodyLimitKb * 1024L, RESP_BODY_LIMIT_MAX);
     }

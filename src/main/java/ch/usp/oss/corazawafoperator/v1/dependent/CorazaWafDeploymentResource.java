@@ -161,7 +161,7 @@ public class CorazaWafDeploymentResource extends CRUDKubernetesDependentResource
                 .build();
 
         log.info("Generate desired Coraza WAF Deployment: " + ResourceID.fromResource(deployment));
-        log.debug("Deployment: " + deployment.toString());
+        log.debug("Deployment: " + deployment);
         return deployment;
     }
 }

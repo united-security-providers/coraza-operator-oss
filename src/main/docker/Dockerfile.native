@@ -10,16 +10,17 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.native -t coraza-operator-oss .
+# env BUILD_VERSION=v<VERSION>; docker build -f src/main/docker/Dockerfile.native -t coraza-operator-oss:$BUILD_VERSION --build-arg BUILD_VERSION=$BUILD_VERSION .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 coraza-operator
+# docker run -i --rm -p 8080:8080 coraza-operator-oss:vX.X.X
 #
 # The `quay.io/quarkus/ubi9-quarkus-micro-image:2.0` base image is based on UBI 9.
 ###
-ARG BUILD_VERSION
+
 FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
+ARG BUILD_VERSION
 WORKDIR /work/
 RUN chown 1001 /work \
     && chmod "g+rwX" /work \

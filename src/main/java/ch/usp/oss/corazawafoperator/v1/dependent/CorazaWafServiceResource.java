@@ -53,7 +53,7 @@ public class CorazaWafServiceResource extends CRUDKubernetesDependentResource<Se
                 .endSpec()
                 .build();
         log.info("Generate desired Coraza WAF Service: " + ResourceID.fromResource(service));
-        log.debug("Service: " + service.toString());
+        log.debug("Service: " + service);
         return service;
     }
 }

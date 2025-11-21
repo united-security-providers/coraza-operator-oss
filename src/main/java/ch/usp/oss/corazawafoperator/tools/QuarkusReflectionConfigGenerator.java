@@ -23,6 +23,7 @@ import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ScanResult;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.extern.jbosslog.JBossLog;
 
 @Builder
@@ -52,20 +53,17 @@ public class QuarkusReflectionConfigGenerator {
 
     @SuppressWarnings("unused")
     private static class ReflectionClassDescription {
-        private String name;
-        private boolean allDeclaredConstructors = true;
-        private boolean allPublicConstructors = true;
-        private boolean allDeclaredFields = true;
-        private boolean allPublicFields = true;
-        private boolean allDeclaredMethods = true;
-        private boolean allPublicMethods = true;
+        @Getter
+        private final String name;
+        private final boolean allDeclaredConstructors = true;
+        private final boolean allPublicConstructors = true;
+        private final boolean allDeclaredFields = true;
+        private final boolean allPublicFields = true;
+        private final boolean allDeclaredMethods = true;
+        private final boolean allPublicMethods = true;
 
         public ReflectionClassDescription(String name) {
             this.name = name;
-        }
-
-        public String getName() {
-            return name;
         }
     }
 

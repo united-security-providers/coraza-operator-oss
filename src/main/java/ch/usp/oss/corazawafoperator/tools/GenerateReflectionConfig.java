@@ -3,9 +3,6 @@
  */
 package ch.usp.oss.corazawafoperator.tools;
 
-import com.sorbay.tools.QuarkusReflectionConfigGenerator;
-import com.sorbay.tools.QuarkusReflectionConfigGenerator.ScanTarget;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -32,10 +29,10 @@ public final class GenerateReflectionConfig {
 		.scanTargets(asList(
 
 				// our own operator/spec code in this git repo (core-waap-operator)
-				ScanTarget.builder().packageRoot("ch.usp.oss.corazawafoperator").build(),
+				QuarkusReflectionConfigGenerator.ScanTarget.builder().packageRoot("ch.usp.oss.corazawafoperator").build(),
 
 				// fabric8 (for annotations in our spec/CR)
-				ScanTarget.builder()
+				QuarkusReflectionConfigGenerator.ScanTarget.builder()
 					.packageRoot("io.fabric8.kubernetes.api.model")
 					.eligibleIfHasAnyIface(singletonList(io.fabric8.kubernetes.api.model.KubernetesResource.class.getName()))
 					.eligibleIfHasFieldAnnotation(com.fasterxml.jackson.annotation.JsonProperty.class.getName())

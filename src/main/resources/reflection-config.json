@@ -9,6 +9,51 @@
     "allPublicMethods": true
   },
   {
+    "name": "ch.usp.oss.corazawafoperator.tools.QuarkusReflectionConfigGenerator",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "ch.usp.oss.corazawafoperator.tools.QuarkusReflectionConfigGenerator$QuarkusReflectionConfigGeneratorBuilder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "ch.usp.oss.corazawafoperator.tools.QuarkusReflectionConfigGenerator$ReflectionClassDescription",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "ch.usp.oss.corazawafoperator.tools.QuarkusReflectionConfigGenerator$ScanTarget",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "ch.usp.oss.corazawafoperator.tools.QuarkusReflectionConfigGenerator$ScanTarget$ScanTargetBuilder",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredFields": true,
+    "allPublicFields": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
     "name": "ch.usp.oss.corazawafoperator.v1.CorazaWaf",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,

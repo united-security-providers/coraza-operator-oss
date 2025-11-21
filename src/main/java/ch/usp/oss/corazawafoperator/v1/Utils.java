@@ -50,8 +50,7 @@ public class Utils {
             Integer pow = powerMap.get(matcher.group(2).toUpperCase());
             if (pow != null) {
                 BigDecimal number = new BigDecimal(strNumber.replace(',', '.'));
-                BigDecimal numberInBytes = number.multiply(UNIT_BASE.pow(pow));
-                return numberInBytes;
+                return number.multiply(UNIT_BASE.pow(pow));
             }
         }
         throw new NumberFormatException("Wrong format: " + sizeString);

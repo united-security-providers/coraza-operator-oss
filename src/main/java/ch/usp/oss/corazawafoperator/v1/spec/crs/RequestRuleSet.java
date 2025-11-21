@@ -3,14 +3,14 @@
  */
 package ch.usp.oss.corazawafoperator.v1.spec.crs;
 
-import java.util.Arrays;
-
-import io.quarkus.qute.TemplateEnum;
 import lombok.Getter;
+
+import java.util.Arrays;
 
 /**
  * Enum of all request rule sets, including ones that are not allowed to be configured and ones always implicitly added.
  */
+@Getter
 public enum RequestRuleSet {
 	REQUEST_911_METHOD_ENFORCEMENT(911),
 	REQUEST_913_SCANNER_DETECTION(913),
@@ -35,12 +35,12 @@ public enum RequestRuleSet {
 		this.number = number;
 	}
 
+    @SuppressWarnings("unused")
 	public String getRuleSetName() {
 		return this.name().replace('_', '-');
 	}
-    public int getNumber() {return this.number;}
 
-	public static RequestRuleSet get(final int number) {
+    public static RequestRuleSet get(final int number) {
 		return Arrays.stream(RequestRuleSet.values())
 				.filter(rs -> rs.getNumber() == number)
 				.findAny()

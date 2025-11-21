@@ -10,6 +10,7 @@ import lombok.Getter;
 /**
  * Enum of all response rule sets, including ones that are not allowed to be configured and ones always implicitly added.
  */
+@Getter
 public enum ResponseRuleSet {
 	RESPONSE_950_DATA_LEAKAGES(950),
 	RESPONSE_951_DATA_LEAKAGES_SQL(951),
@@ -24,12 +25,12 @@ public enum ResponseRuleSet {
 		this.number = number;
 	}
 
+    @SuppressWarnings("unused")
 	public String getRuleSetName() {
 		return this.name().replace('_', '-');
 	}
-    public int getNumber() {return this.number;}
 
-	public static ResponseRuleSet get(final int number) {
+    public static ResponseRuleSet get(final int number) {
 		return Arrays.stream(ResponseRuleSet.values())
 				.filter(rs -> rs.getNumber() == number)
 				.findAny()

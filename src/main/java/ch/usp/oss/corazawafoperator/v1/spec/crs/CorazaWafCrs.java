@@ -33,7 +33,7 @@ public class CorazaWafCrs {
 	/**
 	 * CRS version - This should be only place in the code where the CRS version has to be set explicitly.
 	 * If not possible for technical reasons in the future, list here where else to keep in sync.
-	 *
+	 * <p>
 	 * NOTE: The CRS version here should match the CRS version in:
 	 * - envoy proxy image
 	 */

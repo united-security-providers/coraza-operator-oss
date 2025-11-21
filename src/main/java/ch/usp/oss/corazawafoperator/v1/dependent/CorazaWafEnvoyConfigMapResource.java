@@ -51,7 +51,7 @@ public class CorazaWafEnvoyConfigMapResource extends CRUDKubernetesDependentReso
         configMapBuilder.addToData(FILENAME_LDS, templates.getLDsYaml(corazaWaf));
         ConfigMap configMap = configMapBuilder.build();
         log.infof("Generated desired Coraza WAF Config Map: %s", ResourceID.fromResource(configMap));
-        log.debug("ConfigMap: " + configMap.toString());
+        log.debug("ConfigMap: " + configMap);
         return configMap;
     }
 }
