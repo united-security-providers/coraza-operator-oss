@@ -10,7 +10,7 @@
 #
 # Then, build the image with:
 #
-# env BUILD_VERSION=v<VERSION>; docker build -f src/main/docker/Dockerfile.native -t coraza-operator-oss:$BUILD_VERSION --build-arg BUILD_VERSION=$BUILD_VERSION .
+# BUILD_VERSION="v<VERSION X.Y.Z" bash -c 'docker build -f src/main/docker/Dockerfile.native -t ghcr.io/united-security-providers/corazawaf-operator-oss:$BUILD_VERSION --build-arg BUILD_VERSION=$BUILD_VERSION .'
 #
 # Then run the container using:
 #

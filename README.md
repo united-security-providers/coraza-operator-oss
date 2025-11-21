@@ -1,41 +1,22 @@
-# coraza-operator
+# Coraza WAF Kubernetes Operator
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+This operator showcases an app-centric WAF deployment using envoyproxy, OWASP Coraza and OWASP Core Rule Set.
+It deploy an additional service and deployment which can be placed in front of the application.
+The Ingress or Gateway then needs to be adjusted to point to the WAF service instead directly to the application
+to activate the protection.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Development
 
-## Running the application in dev mode
+### Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
 
 ```shell script
 ./mvnw quarkus:dev
 ```
+> **_NOTE:_**  Quarkus Dev UI: <http://localhost:8080/q/dev/>.
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
-
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
-./mvnw package
-```
-
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
-
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
-
-## Creating a native executable
+### Creating a native executable
 
 You can create a native executable using:
 
@@ -48,11 +29,9 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 ```shell script
 ./mvnw package -Dnative -Dquarkus.native.container-build=true
 ```
+> **_NOTE:_** To ensure no reflection issues occure, you might need to run `ch.usp.oss.corazawafoperator.tools.GenerateReflectionConfig` first.
+> This will update the `reflection-config.json` automatically.
 
-You can then execute your native executable with: `./target/coraza-operator-1.0.0-SNAPSHOT-runner`
+### Building the container
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- Operator SDK ([guide](https://docs.quarkiverse.io/quarkus-operator-sdk/dev/index.html)): Quarkus extension for the Java Operator SDK (https://javaoperatorsdk.io)
+See the instruction in `src/main/docker/Dockerfile.native` on how to build the container.
