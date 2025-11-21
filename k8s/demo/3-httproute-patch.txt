@@ -1,0 +1,1 @@
+kubectl -n default patch httproute juiceshop --type=json --patch '[{"op": "replace", "path": "/spec/rules/0/backendRefs/0", "value": {"kind":"Service","name":"corazawaf-service-juiceshop","port":8080}}]'

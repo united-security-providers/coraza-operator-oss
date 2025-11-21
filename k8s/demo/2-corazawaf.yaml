@@ -2,7 +2,7 @@
 apiVersion: oss.u-s-p.ch/v1alpha1
 kind: CorazaWaf
 metadata:
-  name: testwaf
+  name: juiceshop
   namespace: default
 spec:
   backend:
@@ -12,7 +12,3 @@ spec:
     paranoiaLevel:
       detecting: 2
       enforcing: 1
-    requestRuleExceptions:
-      - path: /socket.io/
-        ruleIds:
-          - 920420
