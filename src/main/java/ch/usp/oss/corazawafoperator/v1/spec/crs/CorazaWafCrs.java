@@ -127,4 +127,9 @@ public class CorazaWafCrs {
 	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	private List<CorazaWafCrsResponseRuleException> responseRuleExceptions = new LinkedList<>();
 
+    @JsonPropertyDescription("Path specific settings for allowed Method or Content-Types, etc.")
+    @Builder.Default
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private List<CorazaWafPathSettings> pathSettings = new LinkedList<>();
+
 }

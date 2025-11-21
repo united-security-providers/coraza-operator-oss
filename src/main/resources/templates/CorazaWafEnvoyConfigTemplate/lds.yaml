@@ -31,7 +31,7 @@ resources:
             libraryId: "coraza-waf"
             libraryPath: "{goFilterPath}"
             pluginName: "coraza-waf"
-{#let spec=corazaWaf.spec requestRuleIdCounter=200000 responseRuleIdCounter=250000}
+{#let spec=corazaWaf.spec pathSettingIdCounter=110000 requestRuleIdCounter=200000 responseRuleIdCounter=250000}
             pluginConfig:
               '@type': "type.googleapis.com/xds.type.v3.TypedStruct"
               value:
@@ -77,8 +77,19 @@ resources:
 {#each spec.crs.responseRuleExceptions}
                         "SecRule REQUEST_FILENAME \"@beginsWith {it.path}\" \"phase:3,nolog,pass,id:{responseRuleIdCounter + it_index},{it.exceptionRuleAction}\"",
 {/each}
-                        "# CRS: Rule sets includes",
+                        "#",
                         "Include @owasp_crs/REQUEST-901-INITIALIZATION.conf",
+                        "# CRS: Path Settings",
+{#each spec.crs.pathSettings}
+{#if it.allowedMethods.orEmpty.size > 0 }
+                        "SecRule REQUEST_FILENAME \"@beginsWith {it.path}\" \"phase:1,nolog,pass,id:{pathSettingIdCounter + it_index},setvar:'tx.allowed_methods={it.allowedMethodsString}'\"",
+{/if}
+{#if it.allowedContentType}
+                        "SecRule REQUEST_HEADERS:Content-Type \"@beginsWith {it.allowedContentType}\" \"phase:1,nolog,pass,id:{pathSettingIdCounter + 1000 + it_index},chain\"",
+                        "SecRule REQUEST_FILENAME \"@beginsWith {it.path}\" \"t:none,ctl:ruleRemoveById=920420{#if it.contentTypeParser},ctl:requestBodyProcessor={it.contentTypeParser}{/if}\"",
+{/if}
+{/each}
+                        "# CRS: Rule sets includes",
 {#each spec.getCrs().getEnabledRequestRules()}
                         "Include @owasp_crs/{it.getRuleSetName()}.conf",
 {/each}
